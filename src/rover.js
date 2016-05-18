@@ -112,10 +112,10 @@ module.exports = function() {
   // Cannot freeze object returned by status due to bug in Jasmine's
   // toEqual() when testing frozen objects.
   const status = () => ({
-    x: x,
-    y: y,
+    x,
+    y,
     direction: directions[direction],
-    encounteredObstacle: encounteredObstacle
+    encounteredObstacle
   });
 
   const execute = (commands) => {

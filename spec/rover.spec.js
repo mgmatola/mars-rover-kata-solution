@@ -5,7 +5,7 @@ describe('Rover', () => {
   var me;
 
   beforeEach(() => {
-    me = new Rover();
+    me = Rover();
   });
 
   it('starts at ', () => {
@@ -22,32 +22,7 @@ describe('Rover', () => {
     expect(me.status()).toEqual({ x: 3, y: 4, direction: 'N', encounteredObstacle: false});
   });
 
-  it('can follow first set of arbitrary commands', () => {
-    me.execute(['F']);
-    expect(me.status()).toEqual({ x: 3, y: 5, direction: 'N', encounteredObstacle: false});
-  });
-
-  it('can follow more commands', () => {
-    me.execute(['F', 'F']);
-    expect(me.status()).toEqual({ x: 3, y: 6, direction: 'N', encounteredObstacle: false});
-  });
-
-  it('can follow commands 3', () => {
-    me.execute(['F', 'F', 'L']);
-    expect(me.status()).toEqual({ x: 3, y: 6, direction: 'W', encounteredObstacle: false});
-  });
-
-  it('can follow commands 4', () => {
-    me.execute(['F', 'F', 'L', 'F']);
-    expect(me.status()).toEqual({ x: 2, y: 6, direction: 'W', encounteredObstacle: false});
-  });
-
-  it('can follow command 5', () => {
-    me.execute(['F', 'F', 'L', 'F', 'R']);
-    expect(me.status()).toEqual({ x: 2, y: 6, direction: 'N', encounteredObstacle: false});
-  });
-
-  it('can follow commands 6', () => {
+  it('can follow set of arbitrary commands', () => {
     me.execute(['F', 'F', 'L', 'F', 'R', 'B']);
     expect(me.status()).toEqual({ x: 2, y: 5, direction: 'N', encounteredObstacle: false});
   });
