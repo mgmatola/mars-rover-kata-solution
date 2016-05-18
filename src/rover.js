@@ -12,10 +12,12 @@ module.exports = function() {
   ];
 
   // State variables with intitial values.
-  let x = 3;
-  let y = 4;
-  let direction = 0;
-  let encounteredObstacle = false;
+  const state = {
+    x: 3,
+    y: 4,
+    direction: 0,
+    encounteredObstacle: false
+  };
 
   // Directions are stored as integers. Letters are for display.
   const directions = {
@@ -24,68 +26,62 @@ module.exports = function() {
     2: 'S',
     3: 'W',
     length: 4
-  }
+  };
 
   /* Private helper functions. */
 
   const isOccupied = () => {
-    return obstacles.some((obstacle) => obstacle.x === x && obstacle.y === y);
+    return obstacles.some((obstacle) => obstacle.x === state.x && obstacle.y === state.y);
   };
 
   const rotateRight = () => {
-    direction++;
-    direction %= directions.length;
+    state.direction++;
+    state.direction %= directions.length;
   };
 
   const rotateLeft = () => {
-    direction--;
-    if (direction < 0) {
-      direction += directions.length;
+    state.direction--;
+    if (state.direction < 0) {
+      state.direction += directions.length;
+    }
+  };
+
+  const increment = (axis) => {
+    var previous = state[axis];
+    state[axis]++;
+    state[axis] %= marsSize;
+    if (isOccupied()) {
+      state.encounteredObstacle = true;
+      state[axis] = previous;
     }
   };
 
   const incrementX = () => {
-    var previousX = x;
-    x++;
-    x %= marsSize;
+    return increment('x');
+  };
+
+  const incrementY = () => {
+    return increment('y');
+  };
+
+  const decrement = (axis) => {
+    var previousX = state[axis];
+    state[axis]--;
+    if (state[axis] < 0) {
+      state[axis] += marsSize;
+    }
     if (isOccupied()) {
-      encounteredObstacle = true;
-      x = previousX;
+      state.encounteredObstacle = true;
+      state[axis] = previousX;
     }
   };
 
   const decrementX = () => {
-    var previousX = x;
-    x--;
-    if (x < 0) {
-      x += marsSize;
-    }
-    if (isOccupied()) {
-      encounteredObstacle = true;
-      x = previousX;
-    }
-  };
-
-  const incrementY = () => {
-    var previousY = y;
-    y++;
-    y %= marsSize;
-    if (isOccupied()) {
-      encounteredObstacle = true;
-      y = previousY;
-    }
+    return decrement('x');
   };
 
   const decrementY = () => {
-    var previousY = y;
-    y--;
-    if (y < 0) {
-      y += marsSize;
-    }
-    if (isOccupied()) {
-      encounteredObstacle = true;
-      y = previousY;
-    }
+    return decrement('y');
   };
 
   /* Private helper command map. */
@@ -112,17 +108,17 @@ module.exports = function() {
   // Cannot freeze object returned by status due to bug in Jasmine's
   // toEqual() when testing frozen objects.
   const status = () => ({
-    x,
-    y,
-    direction: directions[direction],
-    encounteredObstacle
+    x: state.x,
+    y: state.y,
+    direction: directions[state.direction],
+    encounteredObstacle: state.encounteredObstacle
   });
 
   const execute = (commands) => {
     commands.forEach((command) => {
       typeof commandLookup[command] === 'function'
         ? commandLookup[command]()
-        : commandLookup[command][direction]();
+        : commandLookup[command][state.direction]();
     });
     //console.log(commands, status());
   }
