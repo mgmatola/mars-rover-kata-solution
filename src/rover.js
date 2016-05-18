@@ -34,37 +34,24 @@ module.exports = function() {
     return obstacles.some((obstacle) => obstacle.x === state.x && obstacle.y === state.y);
   };
 
-  const rotateRight = () => {
-    state.direction++;
-    state.direction %= directions.length;
-  };
-
-  const rotateLeft = () => {
-    state.direction--;
-    if (state.direction < 0) {
-      state.direction += directions.length;
+  const rotate = (delta) => {
+    return () => {
+      state.direction += delta;
+      state.direction %= directions.length;
+      if (state.direction < 0) {
+        state.direction += directions.length;
+      }
     }
   };
 
-  const increment = (coordinate) => {
+  const rotateRight = rotate(1);
+  const rotateLeft = rotate(-1);
+
+  const move = (coordinate, delta) => {
     return () => {
       var previous = state[coordinate];
-      state[coordinate]++;
+      state[coordinate] += delta;
       state[coordinate] %= marsSize;
-      if (isOccupied()) {
-        state.encounteredObstacle = true;
-        state[coordinate] = previous;
-      }
-    };
-  };
-
-  const incrementX = increment('x');
-  const incrementY = increment('y');
-
-  const decrement = (coordinate) => {
-    return () => {
-      var previous = state[coordinate];
-      state[coordinate]--;
       if (state[coordinate] < 0) {
         state[coordinate] += marsSize;
       }
@@ -75,8 +62,10 @@ module.exports = function() {
     };
   };
 
-  const decrementX = decrement('x');
-  const decrementY = decrement('y');
+  const moveOneSpaceAlongXAxis = move('x', 1);
+  const moveOneSpaceAlongYAxis = move('y', 1);
+  const moveMinusOneSpaceAlongXAxis = move('x', -1);
+  const moveMinusOneSpaceAlongYAxis = move('y', -1);
 
   /* Private helper command map. */
 
@@ -84,16 +73,16 @@ module.exports = function() {
     'R': rotateRight,
     'L': rotateLeft,
     'F': {
-      0: incrementY,
-      1: incrementX,
-      2: decrementY,
-      3: decrementX
+      0: moveOneSpaceAlongYAxis,
+      1: moveOneSpaceAlongXAxis,
+      2: moveMinusOneSpaceAlongYAxis,
+      3: moveMinusOneSpaceAlongXAxis
     },
     'B': {
-      0: decrementY,
-      1: decrementX,
-      2: incrementY,
-      3: incrementX
+      0: moveMinusOneSpaceAlongYAxis,
+      1: moveMinusOneSpaceAlongXAxis,
+      2: moveOneSpaceAlongYAxis,
+      3: moveOneSpaceAlongXAxis
     }
   };
 
@@ -114,8 +103,7 @@ module.exports = function() {
         ? commandLookup[command]()
         : commandLookup[command][state.direction]();
     });
-    //console.log(commands, status());
-  }
+  };
 
   return Object.freeze({
     status,

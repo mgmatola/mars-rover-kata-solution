@@ -8,7 +8,7 @@ describe('Rover', () => {
     me = Rover();
   });
 
-  it('starts at ', () => {
+  it('starts at (3, 4), facing North, never having encountered obstacle', () => {
     expect(me.status()).toEqual({ x: 3, y: 4, direction: 'N', encounteredObstacle: false});
   });
 
