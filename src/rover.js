@@ -46,43 +46,37 @@ module.exports = function() {
     }
   };
 
-  const increment = (axis) => {
-    var previous = state[axis];
-    state[axis]++;
-    state[axis] %= marsSize;
-    if (isOccupied()) {
-      state.encounteredObstacle = true;
-      state[axis] = previous;
-    }
+  const increment = (coordinate) => {
+    return () => {
+      var previous = state[coordinate];
+      state[coordinate]++;
+      state[coordinate] %= marsSize;
+      if (isOccupied()) {
+        state.encounteredObstacle = true;
+        state[coordinate] = previous;
+      }
+    };
   };
 
-  const incrementX = () => {
-    return increment('x');
+  const incrementX = increment('x');
+  const incrementY = increment('y');
+
+  const decrement = (coordinate) => {
+    return () => {
+      var previous = state[coordinate];
+      state[coordinate]--;
+      if (state[coordinate] < 0) {
+        state[coordinate] += marsSize;
+      }
+      if (isOccupied()) {
+        state.encounteredObstacle = true;
+        state[coordinate] = previous;
+      }
+    };
   };
 
-  const incrementY = () => {
-    return increment('y');
-  };
-
-  const decrement = (axis) => {
-    var previousX = state[axis];
-    state[axis]--;
-    if (state[axis] < 0) {
-      state[axis] += marsSize;
-    }
-    if (isOccupied()) {
-      state.encounteredObstacle = true;
-      state[axis] = previousX;
-    }
-  };
-
-  const decrementX = () => {
-    return decrement('x');
-  };
-
-  const decrementY = () => {
-    return decrement('y');
-  };
+  const decrementX = decrement('x');
+  const decrementY = decrement('y');
 
   /* Private helper command map. */
 
