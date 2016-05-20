@@ -11,6 +11,15 @@ module.exports = function() {
     { x: 5, y: 3 }
   ];
 
+  // Directions are stored as integers. Letters are for display.
+  const directions = Object.freeze({
+    0: 'N',
+    1: 'E',
+    2: 'S',
+    3: 'W',
+    length: 4
+  });
+
   // State variables with intitial values.
   const state = {
     x: 3,
@@ -19,29 +28,23 @@ module.exports = function() {
     encounteredObstacle: false
   };
 
-  // Directions are stored as integers. Letters are for display.
-  const directions = {
-    0: 'N',
-    1: 'E',
-    2: 'S',
-    3: 'W',
-    length: 4
-  };
-
   /* Private helper functions. */
 
   const isOccupied = () => {
     return obstacles.some((obstacle) => obstacle.x === state.x && obstacle.y === state.y);
   };
 
+  const wrap = (modulo, a, b) => {
+    return (a, b) => (((a + b) % modulo) + modulo) % modulo;
+  };
+
+  const wrapMars = wrap(marsSize);
+  const wrapDirection = wrap(directions.length); // Safe, now that directions has been frozen.
+
   const rotate = (delta) => {
     return () => {
-      state.direction += delta;
-      state.direction %= directions.length;
-      if (state.direction < 0) {
-        state.direction += directions.length;
-      }
-    }
+      state.direction = wrapDirection(state.direction, delta);
+    };
   };
 
   const rotateRight = rotate(1);
@@ -50,11 +53,7 @@ module.exports = function() {
   const move = (coordinate, delta) => {
     return () => {
       var previous = state[coordinate];
-      state[coordinate] += delta;
-      state[coordinate] %= marsSize;
-      if (state[coordinate] < 0) {
-        state[coordinate] += marsSize;
-      }
+      state[coordinate] = wrapMars(state[coordinate], delta);
       if (isOccupied()) {
         state.encounteredObstacle = true;
         state[coordinate] = previous;
