@@ -34,9 +34,8 @@ module.exports = function() {
     return obstacles.some((obstacle) => obstacle.x === state.x && obstacle.y === state.y);
   };
 
-  const wrap = (modulo, a, b) => {
-    return (a, b) => (((a + b) % modulo) + modulo) % modulo;
-  };
+  const wrap = (modulo) =>
+    (a, b) => (((a + b) % modulo) + modulo) % modulo;
 
   const wrapMars = wrap(marsSize);
   const wrapDirection = wrap(directions.length); // Safe, now that directions has been frozen.
